@@ -36,6 +36,26 @@ module "app_security_group"{
     ingress_cidr_blocks = [module.vpc.vpc_cidr_block]
 }
 
+module "lb_security_group" {
+  source  = "terraform-aws-modules/security-group/aws//modules/web"
+  version = "4.17.1"
+
+  name        = "lb-sg"
+  description = "Security group for load balancer with HTTP ports open to world"
+  vpc_id      = module.vpc.vpc_id
+
+  ingress_cidr_blocks = ["0.0.0.0/0"]
+}
+
+data "aws_ami" "amazon_linux" {
+  most_recent = true
+  owners      = ["amazon"]
+
+  filter {
+    name   = "name"
+    values = ["amzn2-ami-hvm-*-x86_64-gp2"]
+  }
+}
 
 resource "aws_lb" "app" {
   name               = "main-app-lb"
