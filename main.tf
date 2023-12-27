@@ -1,39 +1,39 @@
 provider "aws" {
-    region = var.region
+  region = var.region
 }
 
-data "aws_availability_zones" "available"{
-    state = "available"
-    filter {
-      name = "opt-in-status"
-      values = ["opt-in-not-required"]
-    }
+data "aws_availability_zones" "available" {
+  state = "available"
+  filter {
+    name   = "opt-in-status"
+    values = ["opt-in-not-required"]
+  }
 }
 
 module "vpc" {
-    source = "terraform-aws-modules/vpc/aws"
-    version = "3.19.0"
+  source  = "terraform-aws-modules/vpc/aws"
+  version = "3.19.0"
 
-    main = "main-vpc"
-    cidr = var.vpc_cidr_block
+  main = "main-vpc"
+  cidr = var.vpc_cidr_block
 
-    azs = data.aws_availability_zones.available.names
-    private_subnets = slice(var.private_subnets_cidr_blocks, 0, var.private_subnet_count)
+  azs             = data.aws_availability_zones.available.names
+  private_subnets = slice(var.private_subnets_cidr_blocks, 0, var.private_subnet_count)
 
-    enable_nat_gateway = true 
-    enable_vpn_gateway = var.enable_vpn_gateway
-  
+  enable_nat_gateway = true
+  enable_vpn_gateway = var.enable_vpn_gateway
+
 }
 
-module "app_security_group"{
-    source = "terraform-aws-modules/security-group/aws//modules/web"
-    version = "4.17.1"
+module "app_security_group" {
+  source  = "terraform-aws-modules/security-group/aws//modules/web"
+  version = "4.17.1"
 
-    name = "web-sg"
-    description = "Security group for web-servcers with HTTP ports open within VPC"
-    vpc_id = module.vpc.vpc_id
+  name        = "web-sg"
+  description = "Security group for web-servcers with HTTP ports open within VPC"
+  vpc_id      = module.vpc.vpc_id
 
-    ingress_cidr_blocks = [module.vpc.vpc_cidr_block]
+  ingress_cidr_blocks = [module.vpc.vpc_cidr_block]
 }
 
 module "lb_security_group" {
