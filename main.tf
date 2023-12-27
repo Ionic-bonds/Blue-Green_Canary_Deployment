@@ -25,6 +25,18 @@ module "vpc" {
   
 }
 
+module "app_security_group"{
+    source = "terraform-aws-modules/security-group/aws//modules/web"
+    version = "4.17.1"
+
+    name = "web-sg"
+    description = "Security group for web-servcers with HTTP ports open within VPC"
+    vpc_id = module.vpc.vpc_id
+
+    ingress_cidr_blocks = [module.vpc.vpc_cidr_block]
+}
+
+
 resource "aws_lb" "app" {
   name               = "main-app-lb"
   internal           = false
