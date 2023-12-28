@@ -57,6 +57,11 @@ data "aws_ami" "amazon_linux" {
   }
 }
 
+resource "random_pet" "app" {
+  length    = 2
+  separator = "-"
+}
+
 resource "aws_lb" "app" {
   name               = "main-app-lb"
   internal           = false
