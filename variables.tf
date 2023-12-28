@@ -29,7 +29,7 @@ variable "private_subnet_count" {
   default     = 2
 }
 
-variable "private_subnet_cidr_blocks" {
+variable "public_subnet_cidr_blocks" {
   description = "Available cidr blocks for public subnets"
   type        = list(string)
   default = [
